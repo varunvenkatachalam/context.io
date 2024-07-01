@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Analysis Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1d1d63;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1500px;
+            height: 700px;
+            margin-left: 20px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #1d1d63;
+        }
+
+        .container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .col {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        #image-history {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #image-history img {
+            max-width: 100px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        #chat-box {
+            border: 1px solid #ccc;
+            max-width: 800px;
+            min-height: 500px;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-y: auto;
+            background-color: #666;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .input-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .input-container button[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-container button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .upim {
+            background-color: #1d1d63;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* New CSS styles */
+        .btn {
+            width: 88px;
+            height: 30px;
+            color: #000;
+            font-weight: 700;
+            border-radius: 0;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: "Analyze";
+            color: #fff;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translate(-100%);
+            transition: 0.8s;
+        }
+
+        .btn:hover {
+            background: transparent;
+            box-shadow: 0 0 10px 5px #00fffc;
+        }
+
+        #input-container {
+            bottom: 0;
+            left: 0;
+            width: 720px;
+            background-color: #000;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+        }
+
+        .input input[type="file"],
+        .input input[type="text"] {
+            color: #000;
+            background-color: #000;
+            border-color: #ccc;
+        }
+
+        .input input[type="file"]::placeholder,
+        .input input[type="text"]::placeholder {
+            color: #666;
+        }
+
+        .input input[type="file"]:focus,
+        .input input[type="text"]:focus {
+            outline-color: blue;
+        }
+
+        .input button[type="submit"] {
+            color: #fff;
+            background-color: #000;
+            border: 1px solid #fff;
+        }
+
+        .input button[type="submit"]:hover {
+            background-color: #333;
+            border: 1px solid #fff;
+        }
+        .chat-entry {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .chat-entry.user-input {
+            background-color: #007bff;
+            color: #fff;
+            text-align: right;
+        }
+
+        .chat-entry.response {
+            background-color: #343a40;
+            color: #fff;
+            text-align: left;
+        }
+        .navbar {
+        background-color: #282c6df6;
+      }
+      .navbar-nav .nav-link, .navbar-brand {
+        color: #fff;
+      }
+      .navbar-nav .nav-link:hover, .navbar-brand:hover {
+        color: #ddd;
+      }
+    </style>
+    <script>
+        async function analyzeImage(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            const chatBox = document.getElementById('chat-box');
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.result) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'chat-entry response';
+                    resultDiv.innerHTML = `<strong>Response:</strong> ${data.result}`;
+                    chatBox.appendChild(resultDiv);
+                } else if (data.error) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-entry response';
+                    errorDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                    chatBox.appendChild(errorDiv);
+                }
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'chat-entry response';
+                errorDiv.innerHTML = `<strong>Error:</strong> Error occurred while analyzing the image`;
+                chatBox.appendChild(errorDiv);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function addChatEntry(prompt) {
+            const chatBox = document.getElementById('chat-box');
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-entry user-input';
+            userDiv.innerHTML = `<strong>User:</strong> ${prompt}`;
+            chatBox.appendChild(userDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function addImageToHistory(file) {
+            const imageHistory = document.getElementById('image-history');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '100px';
+                img.style.margin = '10px';
+                imageHistory.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('image').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    addImageToHistory(file);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <!-- <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/" style="color: #ff0000;">Context.io</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/about" style="color: #fff;">About us</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/chat">Content Generator</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/analyze">Image Analyzer</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/generate_image">Image Generator</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/summery">Text Summarizer</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+ -->
+
+
+    <div class="row">
+        <form id="analyzeForm" onsubmit="analyzeImage(event)" enctype="multipart/form-data">
+            <div class="container text-center" style="margin-left: 10px;">
+                <div class="row align-items-start">
+                    <div class="col-4">
+                        <div id="image-history" style="margin-top: 55px;">
+                            <!-- Image history will be displayed here -->
+                        </div>
+                        <div class="input">
+                            <input class="upim" type="file" id="image" name="image" accept="image/*" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="container-1">
+                            <h1 class="im" style="font-family: Georgia, 'Times New Roman', Times, serif; margin-left: -500px;">Image Analyzer</h1>
+                            <div id="chat-box">
+                                <!-- Chat entries will be displayed here -->
+                            </div>
+                            <div class="" id="input-container">
+                                <input class="pr" type="text" id="prompt" name="prompt" required placeholder="Type your prompt here">
+                                <button class="btn" type="submit" onclick="addChatEntry(document.getElementById('prompt').value)">Analyze</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

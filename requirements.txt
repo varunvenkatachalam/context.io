@@ -1,0 +1,6 @@
+os
+requests
+flask
+io
+pillow
+google.generativeai

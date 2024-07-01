@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1d1d63;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #f0f0f0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #2e2e8e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #generated-image {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #download-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        #download-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Image Generation</h1>
+    <form id="generate-image-form" method="POST">
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt">
+        <button type="submit">Generate</button>
+    </form>
+    <div id="generated-image">
+        <!-- Generated image will be displayed here -->
+    </div>
+</body>
+<script>
+    document.getElementById('generate-image-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch('/generate_image', {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await response.json();
+        if (data.image_url) {
+            const img = document.createElement('img');
+            img.src = data.image_url;
+            img.alt = "Generated Image";
+            img.style.maxWidth = "100%";
+            img.style.borderRadius = "10px";
+            document.getElementById('generated-image').innerHTML = '';
+            document.getElementById('generated-image').appendChild(img);
+            
+            const downloadButton = document.createElement('button');
+            downloadButton.id = 'download-button';
+            downloadButton.textContent = 'Download Image';
+            downloadButton.addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.href = data.image_url;
+                link.download = 'generated_image.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            document.getElementById('generated-image').appendChild(downloadButton);
+        } else {
+            alert(data.error);
+        }
+    });
+</script>
+</html>
