@@ -15,9 +15,9 @@ model1 = "llama3"
 model2 = "llava"
 API_URL1 = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5"
 API_URL2 = "https://api-inference.huggingface.co/models/Falconsai/text_summarization"
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "year key"}
 
-api_key = "AIzaSyDnhDLrV74ffbfHx7fEto9Mf_SEquohqao"
+api_key = "year key"
 
 # Configure Google Generative AI
 genai.configure(api_key=api_key)
