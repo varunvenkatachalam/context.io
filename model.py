@@ -20,8 +20,8 @@ chat_model = genai.GenerativeModel("gemini-1.5-flash")
 chat = chat_model.start_chat(history=[])
 
 # Hugging Face API URLs
-API_URL1 = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
-API_URL2 = "https://api-inference.huggingface.co/models/Falconsai/text_summarization"
+# API_URL1 = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
+# API_URL2 = "https://api-inference.huggingface.co/models/Falconsai/text_summarization"
 
 @app.route("/")
 def home():
