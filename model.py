@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Configure API Keys
 HF_API_KEY = ""
 GOOGLE_API_KEY = ""
+#add your API
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 # Configure Google Generative AI
@@ -23,6 +24,7 @@ chat = chat_model.start_chat(history=[])
 # API_URL1 = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
 # API_URL2 = "https://api-inference.huggingface.co/models/Falconsai/text_summarization"
 
+# un comment the above two lines
 @app.route("/")
 def home():
     return render_template("home.html")
