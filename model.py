@@ -5,12 +5,13 @@ import io
 from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import google.generativeai as genai
+import tempfile
 
 app = Flask(__name__)
 
 # Configure API Keys
 HF_API_KEY = ""
-GOOGLE_API_KEY = ""
+GOOGLE_API_KEY = "AIzaSyDEHtUGwrf2rnJql7RTZ2TfxtL7Noo1u5I"
 #add your API
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
@@ -54,13 +55,21 @@ def analyze():
         if not prompt:
             return jsonify({"error": "Prompt is missing"}), 400
         
-        image_path = f"/tmp/{image.filename}"
-        image.save(image_path)
-        uploaded_file = genai.upload_file(image_path, mime_type="image/jpeg")
-        chat_session = model.start_chat(history=[{"role": "user", "parts": [uploaded_file, prompt]}])
-        response = chat_session.send_message(prompt)
-        result = response.text if response else "Error analyzing the image"
-        return jsonify({"result": result})
+        # Create a temporary file with proper cleanup
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as temp_file:
+            image.save(temp_file.name)
+            uploaded_file = genai.upload_file(temp_file.name, mime_type="image/jpeg")
+            chat_session = model.start_chat(history=[{"role": "user", "parts": [uploaded_file, prompt]}])
+            response = chat_session.send_message(prompt)
+            result = response.text if response else "Error analyzing the image"
+            
+            # Clean up the temporary file
+            try:
+                os.unlink(temp_file.name)
+            except Exception as e:
+                print(f"Error cleaning up temporary file: {e}")
+                
+            return jsonify({"result": result})
     return render_template('index1.html')
 
 @app.route("/generate_image", methods=["GET", "POST"])
