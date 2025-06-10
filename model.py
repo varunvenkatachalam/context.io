@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Configure API Keys
 HF_API_KEY = ""
-GOOGLE_API_KEY = "AIzaSyDEHtUGwrf2rnJql7RTZ2TfxtL7Noo1u5I"
+GOOGLE_API_KEY = ""
 #add your API
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
